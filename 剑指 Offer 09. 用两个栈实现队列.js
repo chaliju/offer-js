@@ -3,40 +3,29 @@
 
 
 /**
- * 队列是先入先出，栈是后入先出。一个为入队栈，一个为出队栈，各自负责入队和出队。
- * 
- * 入队操作：
- *      直接压入入队栈即可，即将元素放入 inStack 中。
- * 
- * 出队操作：
- *      outStack 不为空：弹出元素
- *      outStack 为空：将 inStack 元素依次弹出，放入到 outStack中（在数据转移过程中，顺序已经从后入先出变成了先入先出）
- * push(队尾压入)和pop(队头弹出)
+ * 栈后进先出，队列先进先出
+ * 双栈可以实现序列倒置：假设有 stack1=[1, 2, 3] 、 stack2=[] ，如果循环出栈 stack1 并将出栈元素进栈 stack2 ，则循环结束后， stack1=[] 、 stack2=[3, 2, 1] ，即通过 stack2 实现了 stack1 中元素的倒置
+ * 当需要删除队首元素时，仅仅需要 stack2 出栈即可；
+ * 当 stack2 为空时，出队就需要将 stack1 元素倒置倒 stack2 ， stack2 再出队即可；如果 stack1 也为空，即队列中没有元素，返回 -1
  */
 
-
-
 var CQueue = function () {
-  this.inStack = [];
-  this.outStack = [];
+  this.stack1 = []
+  this.stack2 = []
 };
 
 CQueue.prototype.appendTail = function (value) {
-  this.inStack.push(value);
+  this.stack1.push(value);
 };
 
 CQueue.prototype.deleteHead = function () {
-  // outStack非空则可以直接出栈，栈顶元素就是队首元素
-  if (this.outStack.length) {
-    return this.outStack.pop()
+  if (this.stack2.length) {
+    return this.stack2.pop()
   } else {
-    while (this.inStack.length) {
-      this.outStack.push(this.inStack.pop())
+    if (!this.stack1.length) return -1
+    while (this.stack1.length) {
+      this.stack2.push(this.stack1.pop())
     }
-    if (!this.outStack.length) {
-      return -1
-    } else {
-      return this.outStack.pop()
-    }
+    return this.stack2.pop()
   }
 };
